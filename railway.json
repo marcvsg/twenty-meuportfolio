@@ -6,6 +6,6 @@
   "deploy": {
     "restartPolicyMaxRetries": 5,
     "healthcheckPath": "/healthz",
-    "healthcheckTimeout": 300
+    "healthcheckTimeout": 600
   }
 }
