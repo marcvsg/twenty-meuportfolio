@@ -5,11 +5,12 @@ WORKDIR /app
 # Install corepack
 RUN npm install -g corepack@latest && corepack enable
 
-# Copy only package files first (for better cache layers)
-COPY package.json yarn.lock .yarnrc.yml ./
+# Copy yarn berry files (zero-installs mode)
+COPY package.json .yarnrc.yml ./
+COPY .yarn ./.yarn
 
-# Install dependencies
-RUN yarn install --immutable --network-timeout=120000
+# Install dependencies (uses yarn from .yarn/releases)
+RUN .yarn/releases/yarn-4.13.0.cjs install --immutable --network-timeout=120000
 
 # Copy source code
 COPY . .
