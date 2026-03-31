@@ -5,13 +5,8 @@ WORKDIR /app
 # Install corepack
 RUN npm install -g corepack@latest && corepack enable
 
-# Copy only package files first
+# Copy only package files first (for better cache layers)
 COPY package.json yarn.lock .yarnrc.yml ./
-COPY packages/twenty-server/package.json ./packages/twenty-server/
-COPY packages/twenty-shared/package.json ./packages/twenty-shared/
-COPY packages/twenty-ui/package.json ./packages/twenty-ui/
-COPY packages/twenty-utils/package.json ./packages/twenty-utils/
-COPY packages/twenty-emails/package.json ./packages/twenty-emails/
 
 # Install dependencies
 RUN yarn install --immutable --network-timeout=120000
@@ -19,8 +14,7 @@ RUN yarn install --immutable --network-timeout=120000
 # Copy source code
 COPY . .
 
-# Build dependencies first, then server
-RUN yarn nx build twenty-shared
+# Build only twenty-server
 RUN yarn nx build twenty-server
 
 # Production stage
@@ -37,17 +31,12 @@ RUN addgroup -g 1001 -S nodejs && \
 # Copy only necessary files from builder
 COPY --from=builder /app/packages/twenty-server/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/packages/twenty-shared/dist ./packages/twenty-shared/dist
 COPY --from=builder /app/package.json ./
 
 # Set ownership
 RUN chown -R nodejs:nodejs /app
 
 USER nodejs
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:3000', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})" || exit 1
 
 EXPOSE 3000
 
