@@ -1,0 +1,100 @@
+---
+title: Commandes Backend
+---
+
+## Commandes utiles
+
+Ces commandes doivent être exécutées depuis le dossier packages/twenty-server.
+Depuis n'importe quel autre dossier, vous pouvez exécuter `npx nx {command} twenty-server` (ou `npx nx run twenty-server:{command}`).
+
+### Configuration initiale
+
+```
+npx nx database:reset twenty-server # setup the database with dev seeds
+```
+
+### Démarrer le serveur
+
+```
+npx nx run twenty-server:start
+```
+
+### Analyse
+
+```
+npx nx run twenty-server:lint # passez --fix pour corriger les erreurs de lint
+```
+
+### Test
+
+```
+npx nx run twenty-server:test:unit          # run unit tests
+npx nx run twenty-server:test:integration   # run integration tests
+```
+
+Remarque: vous pouvez exécuter `npx nx run twenty-server:test:integration:with-db-reset` si vous avez besoin de réinitialiser la base de données avant de lancer les tests d'intégration.
+
+### Réinitialiser la base de données
+
+Si vous souhaitez réinitialiser et peupler la base de données, vous pouvez exécuter la commande suivante :
+
+```bash
+npx nx run twenty-server:database:reset
+```
+
+### Migrations
+
+#### Pour les objets dans les schémas Core/Metadata (TypeORM)
+
+```bash
+npx nx run twenty-server:typeorm migration:generate src/database/typeorm/core/migrations/nameOfYourMigration -d src/database/typeorm/core/core.datasource.ts
+```
+
+#### Pour les objets de l'Espace de travail
+
+Il n'y a pas de fichiers de migrations, les migrations sont générées automatiquement pour chaque espace de travail, stockées dans la base de données et appliquées avec cette commande
+
+```bash
+npx nx run twenty-server:command workspace:sync-metadata -f
+```
+
+<Warning>
+  Cela supprimera la base de données et réexécutera les migrations et l'initialisation des données.
+
+  Assurez-vous de sauvegarder toutes les données que vous souhaitez conserver avant d'exécuter cette commande.
+</Warning>
+
+## Écosystème Tech
+
+Twenty utilise principalement NestJS pour le backend.
+
+Prisma a été le premier ORM que nous avons utilisé. Mais pour permettre aux utilisateurs de créer des champs et objets personnalisés, un niveau inférieur avait plus de sens car nous avons besoin d'un contrôle granulaire. Le projet utilise maintenant TypeORM.
+
+Voici à quoi ressemble maintenant la pile technologique.
+
+**Noyau**
+
+* [NestJS](https://nestjs.com/)
+* [TypeORM](https://typeorm.io/)
+* [GraphQL Yoga](https://the-guild.dev/graphql/yoga-server)
+
+**Base de données**
+
+* [Postgres](https://www.postgresql.org/)
+
+**Intégrations tierces**
+
+* [Sentry](https://sentry.io/welcome/) pour suivre les bugs.
+
+**Tests**
+
+* [Jest](https://jestjs.io/)
+
+**Outils**
+
+* [Yarn](https://yarnpkg.com/)
+* [Oxlint](https://oxc.rs/docs/guide/usage/linter.html)
+
+**Développement**
+
+* [AWS EKS](https://aws.amazon.com/eks/)

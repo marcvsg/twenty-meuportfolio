@@ -1,0 +1,2 @@
+export { Meeting } from './meeting';
+
