@@ -1,8 +1,7 @@
 {
   "build": {
     "builder": "dockerfile",
-    "dockerfilePath": "packages/twenty-docker/twenty/Dockerfile",
-    "dockerfileTarget": "twenty"
+    "dockerfilePath": "Dockerfile"
   },
   "deploy": {
     "restartPolicyMaxRetries": 5,
